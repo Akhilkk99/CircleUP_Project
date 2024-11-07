@@ -11,7 +11,7 @@ exports.sendEmail = async (options) => {
                 pass: process.env.AUTH_PASSWORD
             },
             tls: {
-                ciphers: 'SSLv3'
+                rejectUnauthorized: false // Remove SSLv3 and use this option instead
             }
         });
 
@@ -22,11 +22,11 @@ exports.sendEmail = async (options) => {
             text: options.message 
         };
 
-        await transporter.sendMail(mailOptions);
+        const info = await transporter.sendMail(mailOptions);
+        console.log('Email sent: ', info.response); // Log the response to check for success
         return { success: true, message: "Email sent successfully" };
     } catch (error) {
         console.error("Error sending email:", error);
-        return { success: false, message: "Failed to send email" };
+        return { success: false, message: error.message };
     }
 };
-
